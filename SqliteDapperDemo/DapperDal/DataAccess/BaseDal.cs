@@ -33,16 +33,17 @@ namespace DapperDal
 
 
         //getEntities
-        public List<T> GetEntities(Func<T, bool> whereLambda)
+        public List<T> GetEntities()
         {
             using (IDbConnection conn = GetOpenConnection())
             {
                 string query = querys.GetEntities;//"select * from Users order by sid desc";
-                IEnumerable<T> users = conn.Query<T>(query, null).Where(whereLambda);
+                IEnumerable<T> users = conn.Query<T>(query, null);
                 return users.ToList<T>();
             }
         }
 
+        /*
         //getPagedEntities
         public List<T> GetPagedEntities<Tkey>(int pageSize, int pageIndex, out int total, Func<T, bool> whereLambda, Func<T, Tkey> orderbyLambda, bool isAsc)
         {
@@ -63,7 +64,7 @@ namespace DapperDal
                     .Take(pageSize);
                 return temp.ToList<T>();
             }
-        }
+        }*/
 
         //insert
         public int Insert(T entity)

@@ -12,7 +12,7 @@ namespace DapperDal
 
         public string UserName { get; set; }
 
-        public Guid ClientId { get; set; }
+        public string ClientId { get; set; }
 
         public DateTime IssuedUtc { get; set; }
 
