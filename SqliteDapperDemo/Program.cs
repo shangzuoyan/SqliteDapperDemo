@@ -10,21 +10,13 @@ namespace DapperDal
     {
         public static void Main()
         {
-            /*
-            RefreshToken refreshToken = new RefreshToken() {
-                Id = "dafdasf",
-                UserName = "goldenkey",
-                ClientId =Guid.NewGuid().ToString(),
-                IssuedUtc = DateTime.Now,
-                ExpiresUtc = DateTime.Now.AddDays(10),
-                ProtectedTicket = "testTikect"
-            };
-            
-            RefreshTokenDal rtDal = new RefreshTokenDal();
-            List<RefreshToken> tokens = rtDal.GetEntities().Where(i=>i.UserName=="goldenkey").ToList();
-
-            rtDal.Insert(refreshToken);
-            */
+            RefreshTokenDal test = new RefreshTokenDal();
+            test.Insert(new RefreshToken() {  ClientId="2222", Id="11", UserName="captainJack", ProtectedTicket="222222", ExpiresUtc="2015-1-2", IssuedUtc="2016-1-8"});
+            var result = test.GetEntities(m => true);
+            foreach (var item in result)
+            {
+                Console.WriteLine(item.UserName); 
+            }
             Console.ReadLine();
         }
     }

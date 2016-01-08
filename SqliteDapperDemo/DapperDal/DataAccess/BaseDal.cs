@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
-using System.Configuration;
 using System.Data.SQLite;
-
+using System.Linq.Expressions;
+using SQLinq;
+using SQLinq.Dapper;
 namespace DapperDal
 {
-    public abstract class BaseDal<T> where T:new()
+    public abstract class BaseDal<T> where T : class, new()
     {
         //set querys for different tables
         public BaseDal()
@@ -22,49 +19,49 @@ namespace DapperDal
         public abstract void SetQuerys();
 
         //get a conncection
-        private static readonly string sqlconnection = @"Data Source=" + Environment.CurrentDirectory.ToString() + @"\Data\AuthData.db;Version=3;";
-        public SQLiteConnection GetOpenConnection()
+        private static readonly string sqlconnection = @"Data Source=" + Environment.CurrentDirectory.ToString() + @"\DapperDal\Data\AuthData.db;Version=3;";
+        public IDbConnection GetOpenConnection()
         {
-            SQLiteConnection connection = new SQLiteConnection(sqlconnection);
+            IDbConnection connection = new SQLiteConnection(sqlconnection);
             connection.Open();
             return connection;
         }
-
-
-
         //getEntities
-        public List<T> GetEntities()
+        public IEnumerable<T> GetEntities(Expression<Func<T, bool>> predicate)
         {
             using (IDbConnection conn = GetOpenConnection())
             {
-                string query = querys.GetEntities;//"select * from Users order by sid desc";
-                IEnumerable<T> users = conn.Query<T>(query, null);
-                return users.ToList<T>();
+                try
+                {
+                    SQLinq<T> query = new SQLinq<T>().Where(predicate);
+                    return conn.Query<T>(query);
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
-        /*
         //getPagedEntities
-        public List<T> GetPagedEntities<Tkey>(int pageSize, int pageIndex, out int total, Func<T, bool> whereLambda, Func<T, Tkey> orderbyLambda, bool isAsc)
+        public IEnumerable<T> GetPagedEntities(int pageSize, int pageIndex, out int total, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> keySelector, bool isAsc)
         {
-            total = GetEntities(whereLambda).Count;
+            int skipCount = pageSize * (pageIndex - 1);
+            total = 0;
+            //create  sqlQuery
+            SQLinq<T> query = new SQLinq<T>().Where(predicate);
             if (isAsc)
             {
-                var temp = GetEntities(whereLambda)
-                    .OrderBy<T, Tkey>(orderbyLambda)
-                    .Skip(pageSize * (pageIndex - 1))
-                    .Take(pageSize);
-                return temp.ToList<T>();
+                query = query.OrderBy(keySelector);
             }
             else
             {
-                var temp = GetEntities(whereLambda)
-                    .OrderByDescending<T, Tkey>(orderbyLambda)
-                    .Skip(pageSize * (pageIndex - 1))
-                    .Take(pageSize);
-                return temp.ToList<T>();
+                query = query.OrderByDescending(keySelector);
             }
-        }*/
+            query.Skip(skipCount).Take(pageSize);
+            //do  query
+            return Query(query);
+        }
 
         //insert
         public int Insert(T entity)
@@ -101,6 +98,20 @@ namespace DapperDal
             }
         }
 
+        private IEnumerable<T> Query(SQLinq<T> query)
+        {
+            try
+            {
+                using (IDbConnection dbConnection = GetOpenConnection())
+                {
+                    return dbConnection.Query<T>(query);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
     }
