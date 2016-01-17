@@ -8,12 +8,11 @@ namespace DapperDal
 {
     class RefreshTokenDal:BaseDal<RefreshToken>
     {
-        public override void SetQuerys()
+        public override void SetSqlCUD()
         {
-            querys.GetEntities = "select * from RefreshToken";
-            querys.Add = "insert into RefreshToken VALUES(@Id,@UserName,@ClientId,@IssuedUtc,@ExpiresUtc,@ProtectedTicket);";
-            querys.Update = "update RefreshToken set Id=@Id,IssuedUtc=@IssuedUtc,ExpiresUtc=@ExpiresUtc,ProtectedTicket=@ProtectedTicket where UserName=@UserName and ClientId=@ClientId";
-            querys.Delete = "delete from RefreshToken where UserName=@UserName and ClientId=@ClientId";
+            sqlCUD.Add = "insert into RefreshToken VALUES(@Id,@UserName,@ClientId,@IssuedUtc,@ExpiresUtc,@ProtectedTicket);";
+            sqlCUD.Update = "update RefreshToken set Id=@Id,IssuedUtc=@IssuedUtc,ExpiresUtc=@ExpiresUtc,ProtectedTicket=@ProtectedTicket where UserName=@UserName and ClientId=@ClientId";
+            sqlCUD.Delete = "delete from RefreshToken where UserName=@UserName and ClientId=@ClientId";
         }
     }
 }

@@ -10,22 +10,26 @@ namespace DapperDal
 {
     public abstract class BaseDal<T> where T : class, new()
     {
-        //set querys for different tables
+        //set sqlCUD for different tables
         public BaseDal()
         {
-            SetQuerys();
+            SetSqlCUD();
         }
-        protected Querys querys = new Querys();
-        public abstract void SetQuerys();
+        protected SqlCUD sqlCUD = new SqlCUD();
+        public abstract void SetSqlCUD();
 
         //get a conncection
-        private static readonly string sqlconnection = @"Data Source=" + Environment.CurrentDirectory.ToString() + @"\DapperDal\Data\AuthData.db;Version=3;";
+        private static readonly string sqlconnection = @"Data Source=" + Environment.CurrentDirectory.ToString() + @"\Data\AuthData.db;Version=3;";
         public IDbConnection GetOpenConnection()
         {
             IDbConnection connection = new SQLiteConnection(sqlconnection);
             connection.Open();
             return connection;
         }
+
+
+        #region query
+
         //getEntities
         public IEnumerable<T> GetEntities(Expression<Func<T, bool>> predicate)
         {
@@ -63,17 +67,18 @@ namespace DapperDal
             return Query(query);
         }
 
+        #endregion
+
+        #region CUD
         //insert
         public int Insert(T entity)
         {
-            int a = 4;
             using (IDbConnection conn = GetOpenConnection())
             {
-                string query = querys.Add;//"insert into Users(sName,sGender,sAge) values(@sNmae,@sGender,@sAge)";
+                string query = sqlCUD.Add;//"insert into Users(sName,sGender,sAge) values(@sNmae,@sGender,@sAge)";
                 int row = conn.Execute(query, entity);//new {sName="GoldenKey",sGender=true,sAge=22 });
                 return row;
             }
-            return 2;
         }
 
         //update
@@ -81,7 +86,7 @@ namespace DapperDal
         {
             using (IDbConnection conn = GetOpenConnection())
             {
-                string query = querys.Update;//"update Users set sName=@sName,sGender=@sGender,sAge=@sAge where sId=@sId";
+                string query = sqlCUD.Update;//"update Users set sName=@sName,sGender=@sGender,sAge=@sAge where sId=@sId";
                 int row = conn.Execute(query, entity);
                 return row;
             }
@@ -92,12 +97,14 @@ namespace DapperDal
         {
             using (IDbConnection conn = GetOpenConnection())
             {
-                string query = querys.Delete;//"delete from Users where sId=@sId";
+                string query = sqlCUD.Delete;//"delete from Users where sId=@sId";
                 int row = conn.Execute(query, entity);
                 return row;
             }
         }
-
+        #endregion
+        
+        #region Helper Methods
         private IEnumerable<T> Query(SQLinq<T> query)
         {
             try
@@ -112,6 +119,8 @@ namespace DapperDal
                 return null;
             }
         }
+        #endregion
+
 
 
     }

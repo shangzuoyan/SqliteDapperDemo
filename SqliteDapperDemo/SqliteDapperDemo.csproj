@@ -62,16 +62,14 @@
   <ItemGroup>
     <Compile Include="DapperDal\DataAccess\BaseDal.cs" />
     <Compile Include="DapperDal\DataAccess\RefreshTokenDal.cs" />
-    <Compile Include="DapperDal\Model\Querys.cs" />
+    <Compile Include="DapperDal\SqlCUD.cs" />
     <Compile Include="DapperDal\Model\RefreshToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DapperDal\Data\AuthData.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="DapperDal\Data\AuthData.db" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
